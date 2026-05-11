@@ -1,0 +1,9 @@
+export const DEFAULT_CARD_WIDTH = 320;
+export const DEFAULT_EDGE_PADDING = 16;
+export const DEFAULT_OFFSET = 18;
+export const DEFAULT_TARGET_PADDING = 2;
+export const MIN_CARD_GAP = 8;
+export const MIN_FALLBACK_TARGET = 2;
+export const DEFAULT_CARD_MAX_HEIGHT_RATIO = 0.52;
+export const MODAL_CLOSE_LINGER_MS = 200;
+export const STEP_TRANSITION_MS = 240;
