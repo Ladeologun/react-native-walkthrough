@@ -33,6 +33,7 @@
   ],
   "scripts": {
     "example": "yarn workspace react-native-inapp-tour-example",
+    "example:ios": "yarn workspace react-native-inapp-tour-example ios",
     "clean": "del-cli lib",
     "prepare": "bob build",
     "typecheck": "tsc",

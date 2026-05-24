@@ -17,6 +17,7 @@ type PaddedTargetOptions = {
 };
 
 type TooltipLayoutOptions = {
+  cardHeight?: number;
   cardWidth: number;
   edgePadding: number;
   insets: Pick<EdgeInsets, 'bottom' | 'top'>;
@@ -31,6 +32,7 @@ export type TooltipLayout = {
   arrowCenterX: number;
   cardLeft: number;
   cardTop: number;
+  effectiveCardHeight: number;
   maxCardHeight: number;
   resolvedPlacement: ResolvedPlacement;
 };
@@ -117,6 +119,7 @@ export function getPaddedTargetRect(
 }
 
 export function getTooltipLayout({
+  cardHeight,
   cardWidth,
   edgePadding,
   insets,
@@ -147,6 +150,10 @@ export function getTooltipLayout({
         MIN_CARD_GAP
     )
   );
+  const effectiveCardHeight = Math.min(
+    cardHeight ?? maxCardHeight,
+    maxCardHeight
+  );
   const cardLeft = clamp(
     paddedTarget.x + paddedTarget.width / 2 - cardWidth / 2,
     edgePadding,
@@ -155,7 +162,7 @@ export function getTooltipLayout({
   const desiredTop =
     resolvedPlacement === 'bottom'
       ? paddedTarget.y + paddedTarget.height + offset
-      : paddedTarget.y - maxCardHeight - offset;
+      : paddedTarget.y - effectiveCardHeight - offset;
   const cardTop = clamp(
     desiredTop,
     insets.top + edgePadding,
@@ -171,6 +178,7 @@ export function getTooltipLayout({
     arrowCenterX,
     cardLeft,
     cardTop,
+    effectiveCardHeight,
     maxCardHeight,
     resolvedPlacement,
   };

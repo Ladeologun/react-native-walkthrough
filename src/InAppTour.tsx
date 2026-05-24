@@ -10,6 +10,7 @@ import {
 import {
   Modal,
   View,
+  type LayoutChangeEvent,
   type HostInstance,
   useWindowDimensions,
 } from 'react-native';
@@ -112,6 +113,7 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
     const [internalVisible, setInternalVisible] = useState(false);
     const [shouldRenderModal, setShouldRenderModal] = useState(false);
     const [targetRect, setTargetRect] = useState<Rect | null>(null);
+    const [cardHeight, setCardHeight] = useState<number | null>(null);
 
     const insets = useSafeAreaInsets();
     const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -410,11 +412,13 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
       arrowCenterX,
       cardLeft,
       cardTop,
+      effectiveCardHeight,
       maxCardHeight,
       resolvedPlacement,
     } = useMemo(
       () =>
         getTooltipLayout({
+          cardHeight: cardHeight ?? undefined,
           cardWidth: computedCardWidth,
           edgePadding,
           insets,
@@ -426,6 +430,7 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
         }),
       [
         computedCardWidth,
+        cardHeight,
         edgePadding,
         insets,
         offset,
@@ -457,7 +462,7 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
       arrowY.value = withTiming(
         resolvedPlacement === 'bottom'
           ? cardTop - 21
-          : cardTop - 1 + maxCardHeight,
+          : cardTop - 1 + effectiveCardHeight,
         animationConfig
       );
     }, [
@@ -469,6 +474,7 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
       cardTop,
       cardX,
       cardY,
+      effectiveCardHeight,
       maxCardHeight,
       paddedTarget.height,
       paddedTarget.width,
@@ -576,6 +582,21 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
       top: cardY.value,
     }));
 
+    const handleCardLayout = useCallback((event: LayoutChangeEvent) => {
+      const nextHeight = event.nativeEvent.layout.height;
+
+      setCardHeight((currentHeight) => {
+        if (
+          currentHeight !== null &&
+          Math.abs(currentHeight - nextHeight) < 1
+        ) {
+          return currentHeight;
+        }
+
+        return nextHeight;
+      });
+    }, []);
+
     const closeIfAllowed = useCallback(() => {
       if (closeOnBackdropPress) {
         close();
@@ -641,6 +662,7 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
               backgroundColor={tourBackgroundColor}
               contentAnimatedStyle={contentAnimatedStyle}
               entranceStyle={cardAnimatedStyle}
+              onLayout={handleCardLayout}
               positionStyle={cardPositionAnimatedStyle}
               shadowColor={resolvedTheme.colors.shadow}
               style={[tooltipStyle, modalContentContainer]}

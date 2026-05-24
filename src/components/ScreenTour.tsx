@@ -1,5 +1,10 @@
 import type { ReactNode } from 'react';
-import { View, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  View,
+  type LayoutChangeEvent,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import styles from '../styles';
@@ -18,6 +23,7 @@ export type ScreenTourRootProps = {
   children?: ReactNode;
   contentAnimatedStyle?: AnimatedViewStyle;
   entranceStyle?: AnimatedViewStyle;
+  onLayout?: (event: LayoutChangeEvent) => void;
   positionStyle?: AnimatedViewStyle;
   shadowColor: string;
   style?: StyleProp<ViewStyle>;
@@ -29,6 +35,7 @@ function ScreenTourRoot({
   children,
   contentAnimatedStyle,
   entranceStyle,
+  onLayout,
   positionStyle,
   shadowColor,
   style,
@@ -36,6 +43,7 @@ function ScreenTourRoot({
 }: ScreenTourRootProps) {
   return (
     <AnimatedView
+      onLayout={onLayout}
       style={[
         styles.card,
         entranceStyle,
