@@ -9,6 +9,8 @@ import {
 } from 'react';
 import {
   Modal,
+  Platform,
+  StatusBar,
   View,
   type LayoutChangeEvent,
   type HostInstance,
@@ -48,6 +50,9 @@ import {
 } from './utils/geometry';
 
 export type { InAppTourProps, InAppTourRef } from './types';
+
+const ANDROID_STATUSBAR_OFFSET =
+  Platform.OS === 'android' ? (StatusBar.currentHeight ?? 0) : 0;
 
 const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
   (
@@ -109,6 +114,7 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
     const retryFrameRef = useRef<number | null>(null);
     const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const prepareSequenceRef = useRef(0);
+    const measurementSequenceRef = useRef(0);
 
     const [internalVisible, setInternalVisible] = useState(false);
     const [shouldRenderModal, setShouldRenderModal] = useState(false);
@@ -133,6 +139,8 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
     const isVisible = visible ?? internalVisible;
 
     const clearMeasurementRetry = useCallback(() => {
+      measurementSequenceRef.current += 1;
+
       if (retryTimeoutRef.current) {
         clearTimeout(retryTimeoutRef.current);
         retryTimeoutRef.current = null;
@@ -142,6 +150,15 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
         cancelAnimationFrame(retryFrameRef.current);
         retryFrameRef.current = null;
       }
+    }, []);
+
+    const isRectStable = useCallback((nextRect: Rect, previousRect: Rect) => {
+      return (
+        Math.abs(nextRect.x - previousRect.x) <= 1 &&
+        Math.abs(nextRect.y - previousRect.y) <= 1 &&
+        Math.abs(nextRect.width - previousRect.width) <= 1 &&
+        Math.abs(nextRect.height - previousRect.height) <= 1
+      );
     }, []);
 
     const clearCloseTimeout = useCallback(() => {
@@ -180,21 +197,47 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
     );
 
     const measureTarget = useCallback(
-      (attempt = 0) => {
+      (attempt = 0, previousRect?: Rect | null, stabilityPasses = 0) => {
         const measurementTarget = targetRef?.current ?? wrapperRef.current;
+        const measurementSequence =
+          attempt === 0 && stabilityPasses === 0
+            ? measurementSequenceRef.current + 1
+            : measurementSequenceRef.current;
+
+        if (attempt === 0 && stabilityPasses === 0) {
+          measurementSequenceRef.current = measurementSequence;
+        }
 
         measurementTarget?.measureInWindow(
           (x: number, y: number, widthValue: number, heightValue: number) => {
+            if (measurementSequenceRef.current !== measurementSequence) {
+              return;
+            }
+
             const hasUsableDimensions =
               widthValue >= MIN_FALLBACK_TARGET &&
               heightValue >= MIN_FALLBACK_TARGET;
 
             if (hasUsableDimensions) {
-              setTargetRect({
+              const nextRect = {
                 height: heightValue,
                 width: widthValue,
                 x,
-                y,
+                y: y + ANDROID_STATUSBAR_OFFSET,
+              };
+              const nextStabilityPasses =
+                previousRect && isRectStable(nextRect, previousRect)
+                  ? stabilityPasses + 1
+                  : 1;
+
+              if (nextStabilityPasses >= 2) {
+                setTargetRect(nextRect);
+                return;
+              }
+
+              clearMeasurementRetry();
+              retryFrameRef.current = requestAnimationFrame(() => {
+                measureTarget(attempt, nextRect, nextStabilityPasses);
               });
               return;
             }
@@ -208,7 +251,7 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
             retryTimeoutRef.current = setTimeout(
               () => {
                 retryFrameRef.current = requestAnimationFrame(() => {
-                  measureTarget(attempt + 1);
+                  measureTarget(attempt + 1, previousRect, stabilityPasses);
                 });
               },
               measurementRetryDelayMs * (attempt + 1)
@@ -218,6 +261,7 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
       },
       [
         clearMeasurementRetry,
+        isRectStable,
         measurementRetryCount,
         measurementRetryDelayMs,
         targetRef,
@@ -561,8 +605,7 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
       top: arrowY.value,
     }));
 
-    const overlayAnimatedProps = useAnimatedProps(() => {
-      const outerPath = `M0,0 H${screenWidth} V${screenHeight} H0 Z`;
+    const holeAnimatedProps = useAnimatedProps(() => {
       const holePath = buildRoundedRectPath(
         targetX.value,
         targetY.value,
@@ -572,7 +615,7 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
       );
 
       return {
-        d: `${outerPath} ${holePath}`,
+        d: holePath,
       };
     }, [resolvedTargetBorderRadius, screenHeight, screenWidth]);
 
@@ -633,8 +676,8 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
             <ScreenTour.Backdrop
               hasTarget={hasMeasuredTarget}
               height={screenHeight}
+              holeAnimatedProps={holeAnimatedProps}
               onPress={closeIfAllowed}
-              overlayAnimatedProps={overlayAnimatedProps}
               overlayColor={tourOverlayColor}
               width={screenWidth}
             />

@@ -1,6 +1,6 @@
 import { Pressable } from 'react-native';
 import Animated, { type AnimatedProps } from 'react-native-reanimated';
-import Svg, { Path, type PathProps } from 'react-native-svg';
+import Svg, { Defs, Mask, Path, Rect, type PathProps } from 'react-native-svg';
 
 import styles from '../styles';
 
@@ -10,8 +10,8 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 export type ScreenTourBackdropProps = {
   hasTarget: boolean;
   height: number;
+  holeAnimatedProps: AnimatedProps<PathProps>['animatedProps'];
   onPress: () => void;
-  overlayAnimatedProps: AnimatedProps<PathProps>['animatedProps'];
   overlayColor: string;
   width: number;
 };
@@ -19,8 +19,8 @@ export type ScreenTourBackdropProps = {
 function ScreenTourBackdrop({
   hasTarget,
   height,
+  holeAnimatedProps,
   onPress,
-  overlayAnimatedProps,
   overlayColor,
   width,
 }: ScreenTourBackdropProps) {
@@ -36,10 +36,19 @@ function ScreenTourBackdrop({
   return (
     <AnimatedPressable onPress={onPress} style={styles.overlayTouchable}>
       <Svg height={height} width={width} viewBox={`0 0 ${width} ${height}`}>
-        <AnimatedPath
-          animatedProps={overlayAnimatedProps}
+        <Defs>
+          <Mask id="tour-hole-mask">
+            <Rect fill="#FFFFFF" height={height} width={width} x={0} y={0} />
+            <AnimatedPath animatedProps={holeAnimatedProps} fill="#000000" />
+          </Mask>
+        </Defs>
+        <Rect
           fill={overlayColor}
-          fillRule="evenodd"
+          height={height}
+          mask="url(#tour-hole-mask)"
+          width={width}
+          x={0}
+          y={0}
         />
       </Svg>
     </AnimatedPressable>

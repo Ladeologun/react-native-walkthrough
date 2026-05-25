@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import styles from '../styles';
@@ -21,6 +21,17 @@ function ScreenTourHighlight({
   ringStyle,
   tintColor,
 }: ScreenTourHighlightProps) {
+  const ringGlowStyle =
+    Platform.OS === 'android'
+      ? {
+          elevation: 0,
+          shadowOpacity: 0,
+          shadowRadius: 0,
+        }
+      : {
+          shadowColor: tintColor,
+        };
+
   return (
     <>
       <AnimatedView
@@ -32,8 +43,8 @@ function ScreenTourHighlight({
           {
             borderColor: tintColor,
             borderRadius,
-            shadowColor: tintColor,
           },
+          ringGlowStyle,
         ]}
       />
       <AnimatedView
