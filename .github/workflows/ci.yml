@@ -101,7 +101,7 @@ jobs:
       - name: Prebuild expo app for Android
         if: env.turbo_cache_hit != 1
         run: |
-          yarn example expo prebuild --platform android
+          yarn example:prebuild:android
 
       - name: Cache Gradle
         if: env.turbo_cache_hit != 1
@@ -161,7 +161,7 @@ jobs:
       - name: Prebuild expo app for iOS
         if: env.turbo_cache_hit != 1
         run: |
-          yarn example expo prebuild --platform ios
+          yarn example:prebuild:ios
 
       - name: Build example for iOS
         run: |
@@ -179,4 +179,4 @@ jobs:
 
       - name: Build example for Web
         run: |
-          yarn example build:web
+          yarn example:build:web

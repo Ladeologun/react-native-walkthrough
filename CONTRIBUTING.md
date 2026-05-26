@@ -62,7 +62,7 @@ Note the `"fabric":true` and `"concurrentRoot":true` properties.
 To run the example app on Web:
 
 ```sh
-yarn workspace @ladeologun/react-native-walkthrough-example web
+yarn example:web
 ```
 
 Make sure your code passes TypeScript:
@@ -124,10 +124,12 @@ The `package.json` file contains various scripts for common tasks:
 - `yarn lint`: lint files with [ESLint](https://eslint.org/).
 - `yarn test`: run unit tests with [Jest](https://jestjs.io/).
 - `yarn example`: start the Metro server for the example app.
-- `yarn example android`: run the example app on Android.
-- `yarn example ios`: run the example app on iOS.
-  - `yarn example web`: run the example app on Web.
-- `yarn example build:web`: build the example app for Web.
+- `yarn example:android`: run the example app on Android.
+- `yarn example:ios`: run the example app on iOS.
+- `yarn example:web`: run the example app on Web.
+- `yarn example:build:web`: build the example app for Web.
+- `yarn example:prebuild:ios`: prebuild the example app for iOS.
+- `yarn example:prebuild:android`: prebuild the example app for Android.
   
 ### Sending a pull request
 
