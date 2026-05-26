@@ -2,17 +2,13 @@ import { describe, expect, it, jest } from '@jest/globals';
 
 jest.mock('../ScreenWalkthrough', () => 'ScreenWalkthrough');
 
-import {
-  ExperimentalWalkthrough,
-  ScreenWalkthrough,
-  defaultTheme,
-} from '../index';
+import { ScreenWalkthrough, defaultTheme } from '../index';
 import { mergeTheme } from '../theme';
 import { getPaddedTargetRect, getTooltipLayout } from '../utils/geometry';
 
 describe('public API', () => {
-  it('exports ExperimentalWalkthrough as an alias of ScreenWalkthrough', () => {
-    expect(ExperimentalWalkthrough).toBe(ScreenWalkthrough);
+  it('exports ScreenWalkthrough', () => {
+    expect(ScreenWalkthrough).toBe('ScreenWalkthrough');
   });
 
   it('exposes the default theme tokens expected by the walkthrough UI', () => {

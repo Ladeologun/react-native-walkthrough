@@ -167,7 +167,6 @@ This is especially useful for:
 The library exports:
 
 - `ScreenWalkthrough`
-- `ExperimentalWalkthrough`
 - `defaultTheme`
 - `ScreenWalkthroughProps`
 - `ScreenWalkthroughRef`
@@ -175,8 +174,6 @@ The library exports:
 - `ScreenWalkthroughTheme`
 - `Placement`
 - `Rect`
-
-`ExperimentalWalkthrough` is currently an alias of `ScreenWalkthrough`.
 
 ## Ref Methods
 
