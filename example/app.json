@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "InappTour Example",
-    "slug": "react-native-inapp-tour-example",
+    "name": "Walkthrough Example",
+    "slug": "react-native-walkthrough-example",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,7 +13,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "inapptour.example"
+      "bundleIdentifier": "com.ladeologun.walkthroughexample"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +22,7 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "inapptour.example"
+      "package": "com.ladeologun.walkthroughexample"
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -1,11 +1,11 @@
-export { default as InAppTour } from './InAppTour';
-export { default as ExperimentalWalkthrough } from './InAppTour';
+export { default as ScreenWalkthrough } from './ScreenWalkthrough';
+export { default as ExperimentalWalkthrough } from './ScreenWalkthrough';
 export { defaultTheme } from './theme';
 export type {
-  InAppTourProps,
-  InAppTourRef,
-  InAppTourTarget,
+  ScreenWalkthroughProps,
+  ScreenWalkthroughRef,
+  ScreenWalkthroughTarget,
   Placement,
   Rect,
 } from './types';
-export type { InAppTourTheme } from './theme';
+export type { ScreenWalkthroughTheme } from './theme';

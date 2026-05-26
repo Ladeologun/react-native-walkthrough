@@ -9,7 +9,10 @@ import {
   type LayoutChangeEvent,
 } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { InAppTour, type InAppTourRef } from 'react-native-inapp-tour';
+import {
+  ScreenWalkthrough,
+  type ScreenWalkthroughRef,
+} from '@ladeologun/react-native-walkthrough';
 
 type StepKey =
   | 'heroBadge'
@@ -98,7 +101,7 @@ export default function App() {
   const insightsCardRef = useRef<HostInstance | null>(null);
   const metricRowRef = useRef<HostInstance | null>(null);
   const bottomBannerRef = useRef<HostInstance | null>(null);
-  const tourRef = useRef<InAppTourRef>(null);
+  const tourRef = useRef<ScreenWalkthroughRef>(null);
   const sectionOffsetsRef = useRef<Record<StepKey, number>>({
     heroBadge: 0,
     settingsFab: 0,
@@ -198,7 +201,9 @@ export default function App() {
               <Text style={styles.settingsFabIcon}>⚙</Text>
             </Pressable>
 
-            <Text style={styles.heading}>react-native-inapp-tour</Text>
+            <Text style={styles.heading}>
+              @ladeologun/react-native-walkthrough
+            </Text>
             <Text style={styles.subtitle}>
               A smooth in-app spotlight walkthrough for React Native, now with
               more varied example targets.
@@ -270,7 +275,7 @@ export default function App() {
         </ScrollView>
 
         {!!step && stepConfig ? (
-          <InAppTour
+          <ScreenWalkthrough
             ref={tourRef}
             visible
             closeOnBackdropPress={false}

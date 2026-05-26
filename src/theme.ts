@@ -1,4 +1,4 @@
-export type InAppTourTheme = {
+export type ScreenWalkthroughTheme = {
   colors: {
     overlay: string;
     surface: string;
@@ -21,7 +21,11 @@ export type InAppTourTheme = {
   };
 };
 
-export const defaultTheme: InAppTourTheme = {
+type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
+};
+
+export const defaultTheme: ScreenWalkthroughTheme = {
   colors: {
     overlay: 'rgba(6, 15, 24, 0.68)',
     surface: '#FFFFFF',
@@ -44,7 +48,9 @@ export const defaultTheme: InAppTourTheme = {
   },
 };
 
-export function mergeTheme(theme?: Partial<InAppTourTheme>): InAppTourTheme {
+export function mergeTheme(
+  theme?: DeepPartial<ScreenWalkthroughTheme>
+): ScreenWalkthroughTheme {
   return {
     colors: {
       ...defaultTheme.colors,

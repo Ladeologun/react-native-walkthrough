@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 import styles from '../styles';
-import type { InAppTourTheme } from '../theme';
+import type { ScreenWalkthroughTheme } from '../theme';
 
 export type ScreenTourFooterProps = {
   hidePrevious?: boolean;
@@ -21,7 +21,7 @@ export type ScreenTourFooterProps = {
   previousTextStyle?: StyleProp<TextStyle>;
   render?: () => ReactNode;
   style?: StyleProp<ViewStyle>;
-  theme: InAppTourTheme;
+  theme: ScreenWalkthroughTheme;
 };
 
 function ScreenTourFooter({

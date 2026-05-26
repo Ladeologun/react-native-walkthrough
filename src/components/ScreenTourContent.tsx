@@ -8,14 +8,14 @@ import {
 import type { ReactNode } from 'react';
 
 import styles from '../styles';
-import type { InAppTourTheme } from '../theme';
+import type { ScreenWalkthroughTheme } from '../theme';
 
 export type ScreenTourContentProps = {
   description?: string;
   descriptionTextStyle?: StyleProp<TextStyle>;
   render?: () => ReactNode;
   style?: StyleProp<ViewStyle>;
-  theme: InAppTourTheme;
+  theme: ScreenWalkthroughTheme;
   title?: string;
   titleTextStyle?: StyleProp<TextStyle>;
 };

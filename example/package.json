@@ -1,5 +1,5 @@
 {
-  "name": "react-native-inapp-tour-example",
+  "name": "@ladeologun/react-native-walkthrough-example",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@expo/metro-runtime": "~55.0.11",
+    "@ladeologun/react-native-walkthrough": "workspace:*",
     "expo": "~55.0.24",
     "expo-status-bar": "~55.0.6",
     "react": "19.2.0",

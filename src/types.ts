@@ -1,7 +1,11 @@
 import type { ReactNode, RefObject } from 'react';
 import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
 
-import type { InAppTourTheme } from './theme';
+import type { ScreenWalkthroughTheme } from './theme';
+
+type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
+};
 
 export type Rect = {
   x: number;
@@ -13,20 +17,20 @@ export type Rect = {
 export type Placement = 'auto' | 'top' | 'bottom';
 export type ResolvedPlacement = Exclude<Placement, 'auto'>;
 
-export type InAppTourTarget = {
+export type ScreenWalkthroughTarget = {
   measureInWindow: (
     callback: (x: number, y: number, width: number, height: number) => void
   ) => void;
 };
 
-export type InAppTourRef = {
+export type ScreenWalkthroughRef = {
   open: () => void;
   close: () => void;
   refreshPosition: () => void;
   measureTarget: () => void;
 };
 
-export type InAppTourProps = {
+export type ScreenWalkthroughProps = {
   children?: ReactNode;
   onNext?: () => void;
   onPrevious?: () => void;
@@ -49,7 +53,7 @@ export type InAppTourProps = {
   targetBorderRadius?: number;
   targetOffsetX?: number;
   targetOffsetY?: number;
-  targetRef?: RefObject<InAppTourTarget | null>;
+  targetRef?: RefObject<ScreenWalkthroughTarget | null>;
   prepareTarget?: () => void | Promise<void>;
   prepareTargetDelayMs?: number;
   measurementRetryDelayMs?: number;
@@ -58,7 +62,7 @@ export type InAppTourProps = {
   showPulse?: boolean;
   closeOnBackdropPress?: boolean;
   disableArrow?: boolean;
-  theme?: Partial<InAppTourTheme>;
+  theme?: DeepPartial<ScreenWalkthroughTheme>;
   renderHeader?: () => ReactNode;
   renderContent?: () => ReactNode;
   renderFooter?: () => ReactNode;

@@ -11,7 +11,13 @@ This project is a monorepo managed using [Yarn workspaces](https://yarnpkg.com/f
 - The library package in the root directory.
 - An example app in the `example/` directory.
 
-To get started with the project, make sure you have the correct version of [Node.js](https://nodejs.org/) installed. See the [`.nvmrc`](./.nvmrc) file for the version used in this project.
+To get started with the project, make sure you have the correct version of [Node.js](https://nodejs.org/) installed. See the [`.nvmrc`](./.nvmrc) file for the version used in this project, then run:
+
+```sh
+nvm use
+```
+
+`react-native-builder-bob` only supports specific Node releases, so using the version from `.nvmrc` is important for `yarn prepare` and release commands.
 
 Run `yarn` in the root directory to install the required dependencies for each package:
 
@@ -30,25 +36,25 @@ You can use various commands from the root directory to work with the project.
 To start the packager:
 
 ```sh
-yarn example start
+yarn example
 ```
 
 To run the example app on Android:
 
 ```sh
-yarn example android
+yarn example:android
 ```
 
 To run the example app on iOS:
 
 ```sh
-yarn example ios
+yarn example:ios
 ```
 
 To confirm that the app is running with the new architecture, you can check the Metro logs for a message like this:
 
 ```sh
-Running "InappTourExample" with {"fabric":true,"initialProps":{"concurrentRoot":true},"rootTag":1}
+Running "WalkthroughExample" with {"fabric":true,"initialProps":{"concurrentRoot":true},"rootTag":1}
 ```
 
 Note the `"fabric":true` and `"concurrentRoot":true` properties.
@@ -56,7 +62,7 @@ Note the `"fabric":true` and `"concurrentRoot":true` properties.
 To run the example app on Web:
 
 ```sh
-yarn example web
+yarn workspace @ladeologun/react-native-walkthrough-example web
 ```
 
 Make sure your code passes TypeScript:
@@ -115,9 +121,9 @@ The `package.json` file contains various scripts for common tasks:
 
 - `yarn`: setup project by installing dependencies.
 - `yarn typecheck`: type-check files with TypeScript.
-  - `yarn lint`: lint files with [ESLint](https://eslint.org/).
-    - `yarn test`: run unit tests with [Jest](https://jestjs.io/).
-  - `yarn example start`: start the Metro server for the example app.
+- `yarn lint`: lint files with [ESLint](https://eslint.org/).
+- `yarn test`: run unit tests with [Jest](https://jestjs.io/).
+- `yarn example`: start the Metro server for the example app.
 - `yarn example android`: run the example app on Android.
 - `yarn example ios`: run the example app on iOS.
   - `yarn example web`: run the example app on Web.

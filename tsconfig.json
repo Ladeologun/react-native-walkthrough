@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "react-native-inapp-tour": ["./src/index"]
+      "@ladeologun/react-native-walkthrough": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

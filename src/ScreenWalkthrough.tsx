@@ -40,7 +40,11 @@ import {
 } from './constants';
 import styles from './styles';
 import { mergeTheme } from './theme';
-import type { InAppTourProps, InAppTourRef, Rect } from './types';
+import type {
+  ScreenWalkthroughProps,
+  ScreenWalkthroughRef,
+  Rect,
+} from './types';
 import {
   buildRoundedRectPath,
   clamp,
@@ -49,12 +53,15 @@ import {
   getTooltipLayout,
 } from './utils/geometry';
 
-export type { InAppTourProps, InAppTourRef } from './types';
+export type { ScreenWalkthroughProps, ScreenWalkthroughRef } from './types';
 
 const ANDROID_STATUSBAR_OFFSET =
   Platform.OS === 'android' ? (StatusBar.currentHeight ?? 0) : 0;
 
-const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
+const ScreenWalkthrough = forwardRef<
+  ScreenWalkthroughRef,
+  ScreenWalkthroughProps
+>(
   (
     {
       children,
@@ -746,4 +753,4 @@ const InAppTour = forwardRef<InAppTourRef, InAppTourProps>(
   }
 );
 
-export default InAppTour;
+export default ScreenWalkthrough;
