@@ -4,6 +4,14 @@ A shape-aware React Native walkthrough component for onboarding, feature educati
 
 It highlights a target, dims the rest of the screen, and shows a tooltip card that can follow the target across different layouts.
 
+## Demo
+
+Watch the example app in action here:
+
+- [walkthrough-demo.mov](./example/walkthrough-demo.mov)
+
+<video src="./example/walkthrough-demo.mov" controls muted playsinline></video>
+
 ## What You Get
 
 - target spotlight with animated highlight ring
