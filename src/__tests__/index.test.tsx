@@ -13,7 +13,9 @@ describe('public API', () => {
 
   it('exposes the default theme tokens expected by the walkthrough UI', () => {
     expect(defaultTheme.colors.accent).toBe('#0A9E4A');
+    expect(defaultTheme.colors.highlight).toBe('#FFFFFF');
     expect(defaultTheme.colors.overlay).toBe('rgba(6, 15, 24, 0.68)');
+    expect(defaultTheme.colors.ripple).toBe('rgba(255, 255, 255, 0.22)');
     expect(defaultTheme.typography.titleWeight).toBe('700');
   });
 });
@@ -32,6 +34,7 @@ describe('mergeTheme', () => {
     });
 
     expect(mergedTheme.colors.accent).toBe('#FF6B00');
+    expect(mergedTheme.colors.ripple).toBe(defaultTheme.colors.ripple);
     expect(mergedTheme.colors.surface).toBe(defaultTheme.colors.surface);
     expect(mergedTheme.typography.bodyLineHeight).toBe(24);
     expect(mergedTheme.typography.titleSize).toBe(

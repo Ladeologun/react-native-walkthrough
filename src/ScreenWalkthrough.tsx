@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import {
+  InteractionManager,
   Modal,
   Platform,
   StatusBar,
@@ -17,6 +18,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import {
+  cancelAnimation,
   Easing,
   interpolate,
   useAnimatedProps,
@@ -93,6 +95,8 @@ const ScreenWalkthrough = forwardRef<
       measurementRetryCount = 8,
       overlayColor,
       showPulse = true,
+      showRipple = false,
+      rippleColor,
       closeOnBackdropPress = true,
       disableArrow = false,
       theme,
@@ -175,6 +179,31 @@ const ScreenWalkthrough = forwardRef<
       }
     }, []);
 
+    const startPulseAnimation = useCallback(
+      (nextVisible: boolean) => {
+        cancelAnimation(pulse);
+
+        if (!nextVisible || !showRipple) {
+          pulse.value = withTiming(0, { duration: 120 });
+          return;
+        }
+
+        pulse.value = 0;
+        pulse.value = withRepeat(
+          withSequence(
+            withTiming(1, {
+              duration: 1900,
+              easing: Easing.out(Easing.cubic),
+            }),
+            withTiming(0, { duration: 0 })
+          ),
+          -1,
+          false
+        );
+      },
+      [pulse, showRipple]
+    );
+
     const setVisibleWithAnimation = useCallback(
       (nextVisible: boolean) => {
         setInternalVisible(nextVisible);
@@ -185,22 +214,9 @@ const ScreenWalkthrough = forwardRef<
             : Easing.in(Easing.quad),
         });
 
-        pulse.value =
-          nextVisible && showPulse
-            ? withRepeat(
-                withSequence(
-                  withTiming(1, {
-                    duration: 1500,
-                    easing: Easing.out(Easing.quad),
-                  }),
-                  withTiming(0, { duration: 0 })
-                ),
-                -1,
-                false
-              )
-            : withTiming(0, { duration: 120 });
+        startPulseAnimation(nextVisible);
       },
-      [cardEntrance, pulse, showPulse]
+      [cardEntrance, startPulseAnimation]
     );
 
     const measureTarget = useCallback(
@@ -215,7 +231,24 @@ const ScreenWalkthrough = forwardRef<
           measurementSequenceRef.current = measurementSequence;
         }
 
-        measurementTarget?.measureInWindow(
+        if (!measurementTarget) {
+          const retryDelay =
+            attempt >= measurementRetryCount
+              ? Math.max(320, measurementRetryDelayMs * 4)
+              : measurementRetryDelayMs * (attempt + 1);
+          const nextAttempt =
+            attempt >= measurementRetryCount ? 0 : attempt + 1;
+
+          clearMeasurementRetry();
+          retryTimeoutRef.current = setTimeout(() => {
+            retryFrameRef.current = requestAnimationFrame(() => {
+              measureTarget(nextAttempt, previousRect, stabilityPasses);
+            });
+          }, retryDelay);
+          return;
+        }
+
+        measurementTarget.measureInWindow(
           (x: number, y: number, widthValue: number, heightValue: number) => {
             if (measurementSequenceRef.current !== measurementSequence) {
               return;
@@ -250,7 +283,15 @@ const ScreenWalkthrough = forwardRef<
             }
 
             if (attempt >= measurementRetryCount) {
-              setTargetRect(null);
+              clearMeasurementRetry();
+              retryTimeoutRef.current = setTimeout(
+                () => {
+                  retryFrameRef.current = requestAnimationFrame(() => {
+                    measureTarget(0, previousRect, 0);
+                  });
+                },
+                Math.max(320, measurementRetryDelayMs * 4)
+              );
               return;
             }
 
@@ -291,6 +332,12 @@ const ScreenWalkthrough = forwardRef<
             }, prepareTargetDelayMs);
           });
         }
+
+        await new Promise<void>((resolve) => {
+          InteractionManager.runAfterInteractions(() => {
+            resolve();
+          });
+        });
       } catch {
         return;
       }
@@ -412,6 +459,14 @@ const ScreenWalkthrough = forwardRef<
       queueTargetMeasurement();
     }, [isVisible, queueTargetMeasurement, shouldRenderModal, targetKey]);
 
+    useEffect(() => {
+      if (!isVisible || !shouldRenderModal) {
+        return;
+      }
+
+      startPulseAnimation(true);
+    }, [isVisible, shouldRenderModal, startPulseAnimation, targetKey]);
+
     const fallbackTargetRect = useMemo<Rect>(
       () => ({
         height: MIN_FALLBACK_TARGET,
@@ -451,6 +506,35 @@ const ScreenWalkthrough = forwardRef<
 
       return getAdaptiveBorderRadius(paddedTarget.width, paddedTarget.height);
     }, [paddedTarget.height, paddedTarget.width, targetBorderRadius]);
+
+    const rippleScaleConfig = useMemo(() => {
+      const baseSize = Math.max(
+        paddedTarget.width,
+        paddedTarget.height,
+        MIN_FALLBACK_TARGET
+      );
+      const toScale = (outset: number, min: number, max: number) =>
+        clamp(1 + (outset * 2) / baseSize, min, max);
+
+      return {
+        pulse: {
+          start: toScale(2, 1.02, 1.08),
+          end: toScale(10, 1.1, 1.28),
+        },
+        inner: {
+          start: toScale(5, 1.05, 1.16),
+          end: toScale(12, 1.12, 1.34),
+        },
+        mid: {
+          start: toScale(8, 1.08, 1.22),
+          end: toScale(16, 1.16, 1.44),
+        },
+        outer: {
+          start: toScale(11, 1.12, 1.28),
+          end: toScale(20, 1.22, 1.56),
+        },
+      };
+    }, [paddedTarget.height, paddedTarget.width]);
 
     const computedCardWidth = useMemo(() => {
       const preferredWidth = width ?? DEFAULT_CARD_WIDTH;
@@ -586,10 +670,78 @@ const ScreenWalkthrough = forwardRef<
       ],
     }));
 
-    const pulseAnimatedStyle = useAnimatedStyle(() => ({
-      opacity: showPulse ? interpolate(pulse.value, [0, 1], [0.42, 0]) : 0,
-      transform: [{ scale: interpolate(pulse.value, [0, 1], [1, 1.18]) }],
-    }));
+    const pulseAnimatedStyle = useAnimatedStyle(
+      () => ({
+        opacity:
+          showRipple && showPulse
+            ? interpolate(pulse.value, [0, 0.08, 0.55, 1], [0, 0.82, 0.46, 0])
+            : 0,
+        transform: [
+          {
+            scale: interpolate(
+              pulse.value,
+              [0, 1],
+              [rippleScaleConfig.pulse.start, rippleScaleConfig.pulse.end]
+            ),
+          },
+        ],
+      }),
+      [rippleScaleConfig.pulse.end, rippleScaleConfig.pulse.start]
+    );
+
+    const smokeRippleInnerAnimatedStyle = useAnimatedStyle(
+      () => ({
+        opacity: showRipple
+          ? interpolate(pulse.value, [0, 0.1, 0.62, 1], [0, 0.58, 0.36, 0])
+          : 0,
+        transform: [
+          {
+            scale: interpolate(
+              pulse.value,
+              [0, 1],
+              [rippleScaleConfig.inner.start, rippleScaleConfig.inner.end]
+            ),
+          },
+        ],
+      }),
+      [rippleScaleConfig.inner.end, rippleScaleConfig.inner.start]
+    );
+
+    const smokeRippleMidAnimatedStyle = useAnimatedStyle(
+      () => ({
+        opacity: showRipple
+          ? interpolate(pulse.value, [0, 0.16, 0.72, 1], [0, 0.44, 0.24, 0])
+          : 0,
+        transform: [
+          {
+            scale: interpolate(
+              pulse.value,
+              [0, 1],
+              [rippleScaleConfig.mid.start, rippleScaleConfig.mid.end]
+            ),
+          },
+        ],
+      }),
+      [rippleScaleConfig.mid.end, rippleScaleConfig.mid.start]
+    );
+
+    const smokeRippleOuterAnimatedStyle = useAnimatedStyle(
+      () => ({
+        opacity: showRipple
+          ? interpolate(pulse.value, [0, 0.22, 0.82, 1], [0, 0.34, 0.16, 0])
+          : 0,
+        transform: [
+          {
+            scale: interpolate(
+              pulse.value,
+              [0, 1],
+              [rippleScaleConfig.outer.start, rippleScaleConfig.outer.end]
+            ),
+          },
+        ],
+      }),
+      [rippleScaleConfig.outer.end, rippleScaleConfig.outer.start]
+    );
 
     const contentAnimatedStyle = useAnimatedStyle(() => ({
       opacity: interpolate(contentMotion.value, [0, 1], [0.72, 1]),
@@ -656,6 +808,7 @@ const ScreenWalkthrough = forwardRef<
     const hasMeasuredTarget = targetRect !== null;
     const tourBackgroundColor = backgroundColor ?? resolvedTheme.colors.surface;
     const tourOverlayColor = overlayColor ?? resolvedTheme.colors.overlay;
+    const resolvedRippleColor = rippleColor ?? resolvedTheme.colors.ripple;
 
     return (
       <>
@@ -694,8 +847,15 @@ const ScreenWalkthrough = forwardRef<
                 borderRadius={resolvedTargetBorderRadius}
                 highlightStyle={highlightPositionAnimatedStyle}
                 pulseStyle={pulseAnimatedStyle}
+                pulseTintColor={resolvedRippleColor}
                 ringStyle={ringAnimatedStyle}
-                tintColor={resolvedTheme.colors.white}
+                smokeStyles={[
+                  smokeRippleInnerAnimatedStyle,
+                  smokeRippleMidAnimatedStyle,
+                  smokeRippleOuterAnimatedStyle,
+                ]}
+                smokeTintColor={resolvedRippleColor}
+                tintColor={resolvedTheme.colors.highlight}
               />
             ) : null}
 

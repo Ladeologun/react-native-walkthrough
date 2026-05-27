@@ -15,6 +15,7 @@ Watch the example app in action here:
 ## What You Get
 
 - target spotlight with animated highlight ring
+- optional smokey ripple halo for a more cinematic spotlight reveal
 - automatic tooltip placement above or below the target
 - support for controlled and imperative usage
 - optional scroll preparation before measurement
@@ -245,7 +246,9 @@ What they do:
 | --- | --- | --- | --- |
 | `backgroundColor` | `string` | theme surface color | Background color of the tooltip card and arrow. |
 | `overlayColor` | `string` | theme overlay color | Dimmed screen overlay color. |
-| `showPulse` | `boolean` | `true` | Enables the animated pulse around the target. |
+| `showPulse` | `boolean` | `true` | Enables the inner pulse ring when ripple is enabled. |
+| `showRipple` | `boolean` | `false` | Master toggle for all ripple motion. When `false`, both the pulse ring and ripple halo are disabled. |
+| `rippleColor` | `string` | theme ripple color | Overrides the ripple halo and pulse color without affecting button/action text colors. |
 | `theme` | `Partial<ScreenWalkthroughTheme>` | `defaultTheme` | Design tokens for colors and typography. |
 
 ### Render hooks
@@ -290,6 +293,8 @@ type ScreenWalkthroughTheme = {
     accent: string;
     white: string;
     shadow: string;
+    highlight: string;
+    ripple: string;
   };
   typography: {
     titleSize: number;
@@ -317,6 +322,8 @@ const defaultTheme = {
     accent: '#0A9E4A',
     white: '#FFFFFF',
     shadow: '#000000',
+    highlight: '#FFFFFF',
+    ripple: 'rgba(255, 255, 255, 0.22)',
   },
   typography: {
     titleSize: 16,
@@ -343,6 +350,7 @@ const defaultTheme = {
     colors: {
       accent: '#D94841',
       surface: '#FFF8F6',
+      ripple: 'rgba(217, 72, 65, 0.22)',
     },
     typography: {
       titleSize: 18,
@@ -351,6 +359,22 @@ const defaultTheme = {
   }}
 />
 ```
+
+### Example ripple override
+
+```tsx
+<ScreenWalkthrough
+  targetRef={targetRef}
+  showRipple
+  rippleColor="rgba(34, 197, 94, 0.9)"
+/>
+```
+
+Notes:
+
+- `rippleColor` only affects the ripple and pulse effect
+- action text still uses `theme.colors.accent` by default
+- you can also override button text directly with `nextBtnTextStyle` and `previousBtnTextStyle`
 
 ## Full Example
 

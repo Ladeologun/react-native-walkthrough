@@ -60,6 +60,8 @@ export type ScreenWalkthroughProps = {
   measurementRetryCount?: number;
   overlayColor?: string;
   showPulse?: boolean;
+  showRipple?: boolean;
+  rippleColor?: string;
   closeOnBackdropPress?: boolean;
   disableArrow?: boolean;
   theme?: DeepPartial<ScreenWalkthroughTheme>;

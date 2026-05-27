@@ -7,6 +7,8 @@ export type ScreenWalkthroughTheme = {
     accent: string;
     white: string;
     shadow: string;
+    highlight: string;
+    ripple: string;
   };
   typography: {
     titleSize: number;
@@ -34,6 +36,8 @@ export const defaultTheme: ScreenWalkthroughTheme = {
     accent: '#0A9E4A',
     white: '#FFFFFF',
     shadow: '#000000',
+    highlight: '#FFFFFF',
+    ripple: 'rgba(255, 255, 255, 0.22)',
   },
   typography: {
     titleSize: 16,

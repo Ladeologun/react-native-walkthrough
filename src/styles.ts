@@ -28,10 +28,37 @@ const styles = StyleSheet.create({
   },
   pulseRing: {
     position: 'absolute',
-    borderWidth: 1,
+    borderWidth: 2.5,
+    backgroundColor: 'transparent',
+    borderCurve: 'continuous',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.42,
+    shadowRadius: 18,
+    elevation: 6,
   },
-  pulseRingTint: {
-    borderColor: 'rgba(255,255,255,0.22)',
+  smokeRipple: {
+    position: 'absolute',
+    backgroundColor: 'transparent',
+    borderCurve: 'continuous',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 26,
+    elevation: 5,
+  },
+  smokeRippleInner: {
+    borderWidth: 2.5,
+  },
+  smokeRippleMid: {
+    borderWidth: 3.5,
+  },
+  smokeRippleOuter: {
+    borderWidth: 4.5,
   },
   card: {
     position: 'absolute',
