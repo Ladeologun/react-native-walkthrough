@@ -192,18 +192,21 @@ export default function App() {
               <Text style={styles.heroBadgeText}>New onboarding flow</Text>
             </View>
 
-            <Pressable
+            <View
               ref={settingsFabRef}
               collapsable={false}
+              onLayout={registerSection('settingsFab')}
               style={styles.settingsFab}
-              onPress={() => setStep('settingsFab')}
             >
-              <Text style={styles.settingsFabIcon}>⚙</Text>
-            </Pressable>
+              <Pressable
+                style={styles.settingsFabPressable}
+                onPress={() => setStep('settingsFab')}
+              >
+                <Text style={styles.settingsFabIcon}>⚙</Text>
+              </Pressable>
+            </View>
 
-            <Text style={styles.heading}>
-              @ladeologun/react-native-walkthrough
-            </Text>
+            <Text style={styles.heading}>react-native-walkthrough</Text>
             <Text style={styles.subtitle}>
               A smooth in-app spotlight walkthrough for React Native, now with
               more varied example targets.
@@ -214,14 +217,14 @@ export default function App() {
             onLayout={registerSection('primaryCta')}
             style={styles.centerSection}
           >
-            <Pressable
-              ref={primaryCtaRef}
-              collapsable={false}
-              style={styles.primaryButton}
-              onPress={() => setStep('heroBadge')}
-            >
-              <Text style={styles.primaryButtonText}>Start battle test</Text>
-            </Pressable>
+            <View ref={primaryCtaRef} collapsable={false}>
+              <Pressable
+                style={styles.primaryButton}
+                onPress={() => setStep('heroBadge')}
+              >
+                <Text style={styles.primaryButtonText}>Start guide</Text>
+              </Pressable>
+            </View>
           </View>
 
           <View
@@ -276,6 +279,7 @@ export default function App() {
 
         {!!step && stepConfig ? (
           <ScreenWalkthrough
+            key={step}
             ref={tourRef}
             visible
             closeOnBackdropPress={false}
@@ -290,10 +294,17 @@ export default function App() {
             prepareTarget={prepareTarget}
             prepareTargetDelayMs={320}
             previousBtnText="Back"
+            rippleColor="rgba(22, 163, 74, 0.9)"
+            showRipple
             targetBorderRadius={stepConfig.targetBorderRadius}
             targetKey={step}
             targetPadding={stepConfig.targetPadding}
             targetRef={targetRef}
+            theme={{
+              colors: {
+                highlight: '#F0FDF4',
+              },
+            }}
           />
         ) : null}
       </View>
@@ -347,6 +358,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.14,
     shadowRadius: 22,
     elevation: 8,
+  },
+  settingsFabPressable: {
+    flex: 1,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   settingsFabIcon: {
     color: '#FFFFFF',
