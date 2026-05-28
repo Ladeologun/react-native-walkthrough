@@ -72,10 +72,8 @@ function ScreenTourHighlight({
             styles.smokeRipple,
             smokeRippleVariants[index] ?? styles.smokeRippleOuter,
             smokeStyle,
-            highlightStyle,
             {
               borderColor: smokeTintColor,
-              borderRadius: borderRadius + 10 + index * 8,
             },
             smokeGlowStyle,
           ]}
@@ -99,10 +97,8 @@ function ScreenTourHighlight({
         style={[
           styles.pulseRing,
           pulseStyle,
-          highlightStyle,
           {
             borderColor: pulseTintColor,
-            borderRadius: borderRadius + 2,
           },
           rippleGlowStyle,
         ]}

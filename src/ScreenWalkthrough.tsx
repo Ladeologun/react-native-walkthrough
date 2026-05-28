@@ -507,31 +507,30 @@ const ScreenWalkthrough = forwardRef<
       return getAdaptiveBorderRadius(paddedTarget.width, paddedTarget.height);
     }, [paddedTarget.height, paddedTarget.width, targetBorderRadius]);
 
-    const rippleScaleConfig = useMemo(() => {
-      const baseSize = Math.max(
-        paddedTarget.width,
-        paddedTarget.height,
+    const rippleOutsetConfig = useMemo(() => {
+      const shorterSide = Math.max(
+        Math.min(paddedTarget.width, paddedTarget.height),
         MIN_FALLBACK_TARGET
       );
-      const toScale = (outset: number, min: number, max: number) =>
-        clamp(1 + (outset * 2) / baseSize, min, max);
+      const toOutset = (ratio: number, min: number, max: number) =>
+        clamp(shorterSide * ratio, min, max);
 
       return {
         pulse: {
-          start: toScale(2, 1.02, 1.08),
-          end: toScale(10, 1.1, 1.28),
+          start: toOutset(0.025, 1, 2),
+          end: toOutset(0.095, 5, 8),
         },
         inner: {
-          start: toScale(5, 1.05, 1.16),
-          end: toScale(12, 1.12, 1.34),
+          start: toOutset(0.05, 3, 5),
+          end: toOutset(0.135, 7, 11),
         },
         mid: {
-          start: toScale(8, 1.08, 1.22),
-          end: toScale(16, 1.16, 1.44),
+          start: toOutset(0.075, 5, 7),
+          end: toOutset(0.175, 9, 14),
         },
         outer: {
-          start: toScale(11, 1.12, 1.28),
-          end: toScale(20, 1.22, 1.56),
+          start: toOutset(0.1, 7, 9),
+          end: toOutset(0.225, 11, 18),
         },
       };
     }, [paddedTarget.height, paddedTarget.width]);
@@ -676,17 +675,53 @@ const ScreenWalkthrough = forwardRef<
           showRipple && showPulse
             ? interpolate(pulse.value, [0, 0.08, 0.55, 1], [0, 0.82, 0.46, 0])
             : 0,
-        transform: [
-          {
-            scale: interpolate(
-              pulse.value,
-              [0, 1],
-              [rippleScaleConfig.pulse.start, rippleScaleConfig.pulse.end]
-            ),
-          },
-        ],
+        left:
+          targetX.value -
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [rippleOutsetConfig.pulse.start, rippleOutsetConfig.pulse.end]
+          ),
+        top:
+          targetY.value -
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [rippleOutsetConfig.pulse.start, rippleOutsetConfig.pulse.end]
+          ),
+        width:
+          targetWidth.value +
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [
+              rippleOutsetConfig.pulse.start * 2,
+              rippleOutsetConfig.pulse.end * 2,
+            ]
+          ),
+        height:
+          targetHeight.value +
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [
+              rippleOutsetConfig.pulse.start * 2,
+              rippleOutsetConfig.pulse.end * 2,
+            ]
+          ),
+        borderRadius:
+          resolvedTargetBorderRadius +
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [rippleOutsetConfig.pulse.start, rippleOutsetConfig.pulse.end]
+          ),
       }),
-      [rippleScaleConfig.pulse.end, rippleScaleConfig.pulse.start]
+      [
+        resolvedTargetBorderRadius,
+        rippleOutsetConfig.pulse.end,
+        rippleOutsetConfig.pulse.start,
+      ]
     );
 
     const smokeRippleInnerAnimatedStyle = useAnimatedStyle(
@@ -694,17 +729,53 @@ const ScreenWalkthrough = forwardRef<
         opacity: showRipple
           ? interpolate(pulse.value, [0, 0.1, 0.62, 1], [0, 0.58, 0.36, 0])
           : 0,
-        transform: [
-          {
-            scale: interpolate(
-              pulse.value,
-              [0, 1],
-              [rippleScaleConfig.inner.start, rippleScaleConfig.inner.end]
-            ),
-          },
-        ],
+        left:
+          targetX.value -
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [rippleOutsetConfig.inner.start, rippleOutsetConfig.inner.end]
+          ),
+        top:
+          targetY.value -
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [rippleOutsetConfig.inner.start, rippleOutsetConfig.inner.end]
+          ),
+        width:
+          targetWidth.value +
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [
+              rippleOutsetConfig.inner.start * 2,
+              rippleOutsetConfig.inner.end * 2,
+            ]
+          ),
+        height:
+          targetHeight.value +
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [
+              rippleOutsetConfig.inner.start * 2,
+              rippleOutsetConfig.inner.end * 2,
+            ]
+          ),
+        borderRadius:
+          resolvedTargetBorderRadius +
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [rippleOutsetConfig.inner.start, rippleOutsetConfig.inner.end]
+          ),
       }),
-      [rippleScaleConfig.inner.end, rippleScaleConfig.inner.start]
+      [
+        resolvedTargetBorderRadius,
+        rippleOutsetConfig.inner.end,
+        rippleOutsetConfig.inner.start,
+      ]
     );
 
     const smokeRippleMidAnimatedStyle = useAnimatedStyle(
@@ -712,17 +783,47 @@ const ScreenWalkthrough = forwardRef<
         opacity: showRipple
           ? interpolate(pulse.value, [0, 0.16, 0.72, 1], [0, 0.44, 0.24, 0])
           : 0,
-        transform: [
-          {
-            scale: interpolate(
-              pulse.value,
-              [0, 1],
-              [rippleScaleConfig.mid.start, rippleScaleConfig.mid.end]
-            ),
-          },
-        ],
+        left:
+          targetX.value -
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [rippleOutsetConfig.mid.start, rippleOutsetConfig.mid.end]
+          ),
+        top:
+          targetY.value -
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [rippleOutsetConfig.mid.start, rippleOutsetConfig.mid.end]
+          ),
+        width:
+          targetWidth.value +
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [rippleOutsetConfig.mid.start * 2, rippleOutsetConfig.mid.end * 2]
+          ),
+        height:
+          targetHeight.value +
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [rippleOutsetConfig.mid.start * 2, rippleOutsetConfig.mid.end * 2]
+          ),
+        borderRadius:
+          resolvedTargetBorderRadius +
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [rippleOutsetConfig.mid.start, rippleOutsetConfig.mid.end]
+          ),
       }),
-      [rippleScaleConfig.mid.end, rippleScaleConfig.mid.start]
+      [
+        resolvedTargetBorderRadius,
+        rippleOutsetConfig.mid.end,
+        rippleOutsetConfig.mid.start,
+      ]
     );
 
     const smokeRippleOuterAnimatedStyle = useAnimatedStyle(
@@ -730,17 +831,53 @@ const ScreenWalkthrough = forwardRef<
         opacity: showRipple
           ? interpolate(pulse.value, [0, 0.22, 0.82, 1], [0, 0.34, 0.16, 0])
           : 0,
-        transform: [
-          {
-            scale: interpolate(
-              pulse.value,
-              [0, 1],
-              [rippleScaleConfig.outer.start, rippleScaleConfig.outer.end]
-            ),
-          },
-        ],
+        left:
+          targetX.value -
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [rippleOutsetConfig.outer.start, rippleOutsetConfig.outer.end]
+          ),
+        top:
+          targetY.value -
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [rippleOutsetConfig.outer.start, rippleOutsetConfig.outer.end]
+          ),
+        width:
+          targetWidth.value +
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [
+              rippleOutsetConfig.outer.start * 2,
+              rippleOutsetConfig.outer.end * 2,
+            ]
+          ),
+        height:
+          targetHeight.value +
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [
+              rippleOutsetConfig.outer.start * 2,
+              rippleOutsetConfig.outer.end * 2,
+            ]
+          ),
+        borderRadius:
+          resolvedTargetBorderRadius +
+          interpolate(
+            pulse.value,
+            [0, 1],
+            [rippleOutsetConfig.outer.start, rippleOutsetConfig.outer.end]
+          ),
       }),
-      [rippleScaleConfig.outer.end, rippleScaleConfig.outer.start]
+      [
+        resolvedTargetBorderRadius,
+        rippleOutsetConfig.outer.end,
+        rippleOutsetConfig.outer.start,
+      ]
     );
 
     const contentAnimatedStyle = useAnimatedStyle(() => ({
