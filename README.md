@@ -8,9 +8,7 @@ It highlights a target, dims the rest of the screen, and shows a tooltip card th
 
 Watch the example app in action here:
 
-- [walkthrough-demo.mov](./example/walkthrough-demo.mov)
-
-<video src="./example/walkthrough-demo.mov" controls muted playsinline></video>
+https://github.com/user-attachments/assets/d8f12c02-f1c7-4bab-a2b6-05ffc70934b9
 
 ## What You Get
 
