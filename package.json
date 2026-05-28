@@ -68,6 +68,7 @@
   },
   "homepage": "https://github.com/Ladeologun/react-native-walkthrough#readme",
   "publishConfig": {
+    "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
